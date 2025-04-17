@@ -4,11 +4,25 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class Rotatable : MonoBehaviour, IRotatable
 {
-    [SerializeField] private float _angle = 180f;
+    [SerializeField] private float _angle = -180f;
+    [SerializeField] private GameObject CardImage;
+
     public void Rotate()
     {
-        // Rotate around Z by 180° for a flat UI image
-        RectTransform rt = GetComponent<RectTransform>();
-        rt.localRotation = rt.localRotation * Quaternion.Euler(0f, _angle, 0);
+        RectTransform rt = CardImage.GetComponent<RectTransform>();
+        Vector3 angles = rt.localEulerAngles;
+
+        if (angles.y != 0f)
+        {
+            Debug.LogWarning("second");
+            angles.y = 0f;
+        }
+        else
+        {
+            angles.y = _angle;
+            Debug.LogWarning("first");
+        }
+
+        rt.localEulerAngles = angles;
     }
 }

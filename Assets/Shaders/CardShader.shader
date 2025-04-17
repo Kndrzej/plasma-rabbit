@@ -2,7 +2,7 @@ Shader "UI/Card"
 {
     Properties
     {
-        [PerRendererData] _MainTex ("Front Texture", 2D) = "white" {}
+        _MainTex ("Front Texture", 2D) = "white" {}
         _Color ("Front Tint", Color) = (1,1,1,1)
         _BackTex ("Back Texture", 2D) = "white" {}
         _BackColor ("Back Tint", Color) = (1,1,1,1)
