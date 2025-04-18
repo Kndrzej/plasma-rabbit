@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using System.Collections;
 using System.Linq;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,6 +14,10 @@ public class GameManager : MonoBehaviour
 
     private Dictionary<Rotatable, float> _cardFlipTimes = new Dictionary<Rotatable, float>(); 
     [SerializeField] private List<Texture2D> _cardsTextures;
+    [SerializeField] private TextMeshProUGUI _score;
+    private int _scoreValue = 0;
+
+    
 
     private void Awake()
     {
@@ -30,6 +35,7 @@ public class GameManager : MonoBehaviour
     {
         Rotatable.Rotating += OnCardRotated;
         StartCoroutine(StartGame());
+        _score.text = "Score: " + _scoreValue; 
     }
 
     void Update()
@@ -140,6 +146,8 @@ public class GameManager : MonoBehaviour
         {
             HideCard(card1);
             HideCard(card2);
+            _scoreValue += 1;
+            _score.text = "Score: " + _scoreValue;
         }
         else
         {
