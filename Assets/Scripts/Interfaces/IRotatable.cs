@@ -1,4 +1,4 @@
 public interface IRotatable
 {
-    void Rotate();
+    void Rotate(bool overrideFlipState = false);
 }

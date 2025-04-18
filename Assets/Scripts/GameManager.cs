@@ -1,21 +1,58 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine;
+using System.Collections;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance { get; private set; } 
+
     public List<Rotatable> Rotatables;
-    
-    private List<Rotatable> _flippedCardsQueue = new List<Rotatable>();
+    public List<Rotatable> FlippedCardsQueue = new List<Rotatable>();
+
+    private Dictionary<Rotatable, float> _cardFlipTimes = new Dictionary<Rotatable, float>(); 
     [SerializeField] private List<Texture2D> _cardsTextures;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject); 
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
 
     void Start()
     {
         Rotatable.Rotating += OnCardRotated;
         StartCoroutine(StartGame());
     }
+
+    void Update()
+    {
+       
+        List<Rotatable> cardsToFlip = new List<Rotatable>();
+        List<Rotatable> flippedCardsQueueCopy = new List<Rotatable>(FlippedCardsQueue);
+        foreach (var card in flippedCardsQueueCopy)
+        {
+            if (_cardFlipTimes.ContainsKey(card) && Time.time - _cardFlipTimes[card] > 1.25f)
+            {
+                cardsToFlip.Add(card);
+            }
+        }
+
+        foreach (var card in cardsToFlip)
+        {
+            card.Rotate();
+            FlippedCardsQueue.Remove(card);
+            _cardFlipTimes.Remove(card); 
+        }
+    }
+
     public IEnumerator StartGame()
     {
         yield return new WaitForSeconds(1);
@@ -26,11 +63,16 @@ public class GameManager : MonoBehaviour
 
         int pairCount = Rotatables.Count / 2;
         List<int> cardIDs = new();
+        HashSet<int> usedNumbers = new();
 
-        // Generate pairs of numbers from 0 to 51
-        for (int i = 0; i < 52; i++)
+        while (usedNumbers.Count < pairCount)
         {
-            cardIDs.Add(i / 2); // Each number appears twice
+            int randomID = Random.Range(0, 52);
+            if (usedNumbers.Add(randomID))
+            {
+                cardIDs.Add(randomID);
+                cardIDs.Add(randomID);
+            }
         }
 
         Shuffle(cardIDs);
@@ -59,24 +101,24 @@ public class GameManager : MonoBehaviour
             (list[i], list[j]) = (list[j], list[i]);
         }
     }
-    void OnDestroy()
+
+    private void OnDestroy()
     {
         Rotatable.Rotating -= OnCardRotated;
     }
 
     private void OnCardRotated(Rotatable card)
     {
-        if (_flippedCardsQueue.Contains(card))
-            return; 
+        if (FlippedCardsQueue.Contains(card)) return;
 
-        _flippedCardsQueue.Add(card);
+        FlippedCardsQueue.Add(card);
+        _cardFlipTimes[card] = Time.time;
 
-        if (_flippedCardsQueue.Count % 2 == 0)
+        if (FlippedCardsQueue.Count % 2 == 0)
         {
-            
-            int last = _flippedCardsQueue.Count;
-            Rotatable first = _flippedCardsQueue[last - 2];
-            Rotatable second = _flippedCardsQueue[last - 1];
+            int last = FlippedCardsQueue.Count;
+            Rotatable first = FlippedCardsQueue[last - 2];
+            Rotatable second = FlippedCardsQueue[last - 1];
 
             StartCoroutine(HandlePair(first, second));
         }
@@ -84,11 +126,6 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator HandlePair(Rotatable card1, Rotatable card2)
     {
-        while (card1.IsAnimating || card2.IsAnimating)
-        {
-            yield return null;
-        }
-
         Card cardComponent1 = card1.GetComponent<Card>();
         Card cardComponent2 = card2.GetComponent<Card>();
 
@@ -106,18 +143,22 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            card1.ResetRotation();
-            card2.ResetRotation();
+            yield return new WaitForSeconds(0.1f);
+            Debug.Log("no match");
+
+            card1.RotateToZero();
+            card2.RotateToZero();
+            yield return new WaitForSeconds(1);
+            
         }
+        yield return new WaitForSeconds(1);
+        FlippedCardsQueue.Remove(card1);
+        FlippedCardsQueue.Remove(card2);
 
-        _flippedCardsQueue.Remove(card1);
-        _flippedCardsQueue.Remove(card2);
     }
-
 
     private void HideCard(Rotatable card)
     {
-        
         card.GetComponent<Graphic>();
         card.enabled = false;
         var images = card.GetComponentsInChildren<Graphic>();
@@ -129,5 +170,4 @@ public class GameManager : MonoBehaviour
         var rotatable = card.GetComponent<Rotatable>();
         if (rotatable != null) rotatable.enabled = false;
     }
-
 }

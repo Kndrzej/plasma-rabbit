@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,27 +18,39 @@ public class Rotatable : MonoBehaviour, IRotatable
     private float _animationTimer = 0f;
     private Quaternion _initialRotation;
     private Quaternion _finalRotation;
-    
-    public void ResetRotation()
+
+    public void RotateToZero()
     {
-        IsFlipped = false;
-        Debug.Log($"{name} reset");
+        RectTransform rectTransform = _cardImage.GetComponent<RectTransform>();
+        Vector3 currentEulerAngles = rectTransform.localEulerAngles;
+
+        Quaternion targetRotation = Quaternion.Euler(currentEulerAngles.x, 0f, currentEulerAngles.z);
+
+        _initialRotation = rectTransform.localRotation;
+        _finalRotation = targetRotation;
+
+        _animationTimer = 0f;
+        IsAnimating = true;
     }
 
-    public void Rotate()
+
+    public void Rotate(bool overrideFlipState = false)
     {
-        if (IsAnimating) return;
         /*I rotate before animation to match: "The system
-        should allow continuous card flipping without requiring users to wait for card
-        comparisons to finish before selecting additional cards.
-        " requirement.
-         */
-        IsFlipped = !IsFlipped;
+          should allow continuous card flipping without requiring users to wait for card
+          comparisons to finish before selecting additional cards.
+          " requirement.*/
+        if (IsAnimating && !overrideFlipState) return;
+
+        if (!overrideFlipState)
+            IsFlipped = !IsFlipped;
+
         Rotating?.Invoke(this);
 
         RectTransform rectTransform = _cardImage.GetComponent<RectTransform>();
         Vector3 currentEulerAngles = rectTransform.localEulerAngles;
-        float newYRotation = currentEulerAngles.y == 0f ? _targetYRotation : 0f;
+
+        float newYRotation = IsFlipped ? 0f : 180f;
 
         _initialRotation = rectTransform.localRotation;
         _finalRotation = Quaternion.Euler(currentEulerAngles.x, newYRotation, currentEulerAngles.z);
@@ -46,8 +59,11 @@ public class Rotatable : MonoBehaviour, IRotatable
         IsAnimating = true;
     }
 
+    
+
     private void Update()
     {
+  
         if (!IsAnimating) return;
 
         _animationTimer += Time.deltaTime;
