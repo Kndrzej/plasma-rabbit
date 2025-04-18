@@ -4,25 +4,43 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class Rotatable : MonoBehaviour, IRotatable
 {
-    [SerializeField] private float _angle = -180f;
-    [SerializeField] private GameObject CardImage;
+    [SerializeField] private float targetYRotation = -180f;
+    [SerializeField] private GameObject cardImage;
+    [SerializeField] private float rotationDuration = 0.5f;
+
+    private bool isAnimating = false;
+    private float animationTimer = 0f;
+    private Quaternion initialRotation;
+    private Quaternion finalRotation;
 
     public void Rotate()
     {
-        RectTransform rt = CardImage.GetComponent<RectTransform>();
-        Vector3 angles = rt.localEulerAngles;
+        if (isAnimating) return;
 
-        if (angles.y != 0f)
-        {
-            Debug.LogWarning("second");
-            angles.y = 0f;
-        }
-        else
-        {
-            angles.y = _angle;
-            Debug.LogWarning("first");
-        }
+        RectTransform rectTransform = cardImage.GetComponent<RectTransform>();
+        Vector3 currentEulerAngles = rectTransform.localEulerAngles;
+        float newYRotation = currentEulerAngles.y == 0f ? targetYRotation : 0f;
 
-        rt.localEulerAngles = angles;
+        initialRotation = rectTransform.localRotation;
+        finalRotation = Quaternion.Euler(currentEulerAngles.x, newYRotation, currentEulerAngles.z);
+
+        animationTimer = 0f;
+        isAnimating = true;
+    }
+
+    private void Update()
+    {
+        if (!isAnimating) return;
+
+        animationTimer += Time.deltaTime;
+        float progress = Mathf.Clamp01(animationTimer / rotationDuration);
+
+        RectTransform rectTransform = cardImage.GetComponent<RectTransform>();
+        rectTransform.localRotation = Quaternion.Lerp(initialRotation, finalRotation, progress);
+
+        if (progress >= 1f)
+        {
+            isAnimating = false;
+        }
     }
 }
