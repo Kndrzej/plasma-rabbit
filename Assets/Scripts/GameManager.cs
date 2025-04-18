@@ -16,6 +16,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private List<Texture2D> _cardsTextures;
     [SerializeField] private TextMeshProUGUI _score;
     [SerializeField] private GameObject _winScreen;
+    [SerializeField] private AudioSource _audioSource;
+
+    [SerializeField] private AudioClip _winClip;
+    [SerializeField] private AudioClip _matchClip;
+    [SerializeField] private AudioClip _noMatchClip;
+    [SerializeField] private AudioClip _flipClip;
     private int _scoreValue = 0;
 
     
@@ -117,7 +123,7 @@ public class GameManager : MonoBehaviour
     private void OnCardRotated(Rotatable card)
     {
         if (FlippedCardsQueue.Contains(card)) return;
-
+        _audioSource.PlayOneShot(_flipClip);
         FlippedCardsQueue.Add(card);
         _cardFlipTimes[card] = Time.time;
 
@@ -145,14 +151,17 @@ public class GameManager : MonoBehaviour
 
         if (isMatch)
         {
+            _audioSource.PlayOneShot(_matchClip);
             _scoreValue += 1;
             _score.text = "Score: " + _scoreValue;
             HideCard(card1);
             HideCard(card2);
+
         }
         else
         {
             yield return new WaitForSeconds(0.1f);
+            _audioSource.PlayOneShot(_noMatchClip);
             Debug.Log("no match");
 
             card1.RotateToZero();
@@ -189,6 +198,7 @@ public class GameManager : MonoBehaviour
 
         if (allHidden && _winScreen != null)
         {
+            _audioSource.PlayOneShot(_winClip);
             _winScreen.SetActive(true);
             _winScreen.GetComponent<WinScreen>().SetScore(_scoreValue);
         }
