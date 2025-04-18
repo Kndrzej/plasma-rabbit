@@ -6,7 +6,6 @@ using UnityEngine.UI;
 [RequireComponent(typeof(GraphicRaycaster))]
 public class ObjectClicker : MonoBehaviour
 {
-    // The UI raycaster on this Canvas
     private GraphicRaycaster _uiRaycaster;
     private EventSystem _eventSystem;
 
@@ -20,7 +19,6 @@ public class ObjectClicker : MonoBehaviour
     {
         if (!Input.GetMouseButtonDown(0)) return;
 
-        // 1) First try a UI raycast:
         var pointer = new PointerEventData(_eventSystem)
         {
             position = Input.mousePosition
@@ -30,6 +28,14 @@ public class ObjectClicker : MonoBehaviour
 
         foreach (var r in uiResults)
         {
+            // Handle WinScreen separately
+            var winScreen = r.gameObject.GetComponent<WinScreen>();
+            if (winScreen != null)
+            {
+                winScreen.OnClicked();
+                return;
+            }
+
             var rot = r.gameObject.GetComponent<IRotatable>();
             if (rot != null)
             {
@@ -38,13 +44,22 @@ public class ObjectClicker : MonoBehaviour
             }
         }
 
-        // 2) If nothing hit in UI, try a Physics raycast into the 3D world:
+        // Physics raycast
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
+            var winScreen = hit.collider.GetComponent<WinScreen>();
+            if (winScreen != null)
+            {
+                winScreen.OnClicked();
+                return;
+            }
+
             var rot = hit.collider.GetComponent<IRotatable>();
             if (rot != null)
+            {
                 rot.Rotate();
+            }
         }
     }
 }

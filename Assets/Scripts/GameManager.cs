@@ -15,11 +15,12 @@ public class GameManager : MonoBehaviour
     private Dictionary<Rotatable, float> _cardFlipTimes = new Dictionary<Rotatable, float>(); 
     [SerializeField] private List<Texture2D> _cardsTextures;
     [SerializeField] private TextMeshProUGUI _score;
+    [SerializeField] private GameObject _winScreen;
     private int _scoreValue = 0;
 
     
 
-    private void Awake()
+    void Awake()
     {
         if (Instance != null && Instance != this)
         {
@@ -167,15 +168,29 @@ public class GameManager : MonoBehaviour
 
     private void HideCard(Rotatable card)
     {
-        card.GetComponent<Graphic>();
-        card.enabled = false;
+        var graphic = card.GetComponent<Graphic>();
+        if (graphic != null) graphic.enabled = false;
+
         var images = card.GetComponentsInChildren<Graphic>();
         foreach (var image in images)
         {
             image.enabled = false;
         }
 
-        var rotatable = card.GetComponent<Rotatable>();
-        if (rotatable != null) rotatable.enabled = false;
+        if (card.TryGetComponent(out Collider col)) col.enabled = false;
+        if (card.TryGetComponent(out Rotatable rotatable)) rotatable.enabled = false;
+
+        // Check if all cards are matched
+        bool allHidden = Rotatables.All(r =>
+        {
+            var g = r.GetComponent<Graphic>();
+            return g == null || !g.enabled;
+        });
+
+        if (allHidden && _winScreen != null)
+        {
+            _winScreen.SetActive(true);
+        }
     }
+
 }
