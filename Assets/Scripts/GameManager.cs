@@ -145,10 +145,10 @@ public class GameManager : MonoBehaviour
 
         if (isMatch)
         {
-            HideCard(card1);
-            HideCard(card2);
             _scoreValue += 1;
             _score.text = "Score: " + _scoreValue;
+            HideCard(card1);
+            HideCard(card2);
         }
         else
         {
@@ -190,6 +190,7 @@ public class GameManager : MonoBehaviour
         if (allHidden && _winScreen != null)
         {
             _winScreen.SetActive(true);
+            _winScreen.GetComponent<WinScreen>().SetScore(_scoreValue);
         }
     }
 
