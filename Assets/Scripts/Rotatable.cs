@@ -4,43 +4,48 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class Rotatable : MonoBehaviour, IRotatable
 {
-    [SerializeField] private float targetYRotation = -180f;
-    [SerializeField] private GameObject cardImage;
-    [SerializeField] private float rotationDuration = 0.5f;
+    public bool IsFlipped = false;
+    
+    [SerializeField] private float _targetYRotation = -180f;
+    [SerializeField] private GameObject _cardImage;
+    [SerializeField] private float _rotationDuration = 0.5f;
 
-    private bool isAnimating = false;
-    private float animationTimer = 0f;
-    private Quaternion initialRotation;
-    private Quaternion finalRotation;
+    private bool _isAnimating = false;
+    private float _animationTimer = 0f;
+    private Quaternion _initialRotation;
+    private Quaternion _finalRotation;
+
 
     public void Rotate()
     {
-        if (isAnimating) return;
+        if (_isAnimating) return;
+        IsFlipped = !IsFlipped;
 
-        RectTransform rectTransform = cardImage.GetComponent<RectTransform>();
+        RectTransform rectTransform = _cardImage.GetComponent<RectTransform>();
         Vector3 currentEulerAngles = rectTransform.localEulerAngles;
-        float newYRotation = currentEulerAngles.y == 0f ? targetYRotation : 0f;
+        float newYRotation = currentEulerAngles.y == 0f ? _targetYRotation : 0f;
 
-        initialRotation = rectTransform.localRotation;
-        finalRotation = Quaternion.Euler(currentEulerAngles.x, newYRotation, currentEulerAngles.z);
+        _initialRotation = rectTransform.localRotation;
+        _finalRotation = Quaternion.Euler(currentEulerAngles.x, newYRotation, currentEulerAngles.z);
 
-        animationTimer = 0f;
-        isAnimating = true;
+        _animationTimer = 0f;
+        _isAnimating = true;
+
     }
 
     private void Update()
     {
-        if (!isAnimating) return;
+        if (!_isAnimating) return;
 
-        animationTimer += Time.deltaTime;
-        float progress = Mathf.Clamp01(animationTimer / rotationDuration);
+        _animationTimer += Time.deltaTime;
+        float progress = Mathf.Clamp01(_animationTimer / _rotationDuration);
 
-        RectTransform rectTransform = cardImage.GetComponent<RectTransform>();
-        rectTransform.localRotation = Quaternion.Lerp(initialRotation, finalRotation, progress);
+        RectTransform rectTransform = _cardImage.GetComponent<RectTransform>();
+        rectTransform.localRotation = Quaternion.Lerp(_initialRotation, _finalRotation, progress);
 
         if (progress >= 1f)
         {
-            isAnimating = false;
+            _isAnimating = false;
         }
     }
 }

@@ -90,9 +90,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1846a7f08940ea41a42a937c9560093, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetYRotation: -180
-  cardImage: {fileID: 5273559664157851457}
-  rotationDuration: 0.5
+  IsFlipped: 0
+  _targetYRotation: -180
+  _cardImage: {fileID: 5273559664157851457}
+  _rotationDuration: 0.5
 --- !u!1 &5273559664157851457
 GameObject:
   m_ObjectHideFlags: 0

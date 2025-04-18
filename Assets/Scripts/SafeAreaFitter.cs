@@ -9,8 +9,8 @@ public class SafeAreaFitter : MonoBehaviour
     [SerializeField] private RectTransform _bottomNavbar;
     [SerializeField] private RectTransform _areaForCards;
 
-    private const float TopBarHeight = 120f;
-    private const float BottomBarHeight = 130f;
+    private const float _topBarHeight = 120f;
+    private const float _bottomBarHeight = 130f;
 
     private void Start()
     {
@@ -47,19 +47,19 @@ public class SafeAreaFitter : MonoBehaviour
         _topNavbar.anchorMin = new Vector2(0, 1);
         _topNavbar.anchorMax = new Vector2(1, 1);
         _topNavbar.pivot = new Vector2(0.5f, 1f);
-        _topNavbar.offsetMin = new Vector2(0, -TopBarHeight);
+        _topNavbar.offsetMin = new Vector2(0, -_topBarHeight);
         _topNavbar.offsetMax = new Vector2(0, 0);
 
         _bottomNavbar.anchorMin = new Vector2(0, 0);
         _bottomNavbar.anchorMax = new Vector2(1, 0);
         _bottomNavbar.pivot = new Vector2(0.5f, 0f);
         _bottomNavbar.offsetMin = new Vector2(0, 0);
-        _bottomNavbar.offsetMax = new Vector2(0, BottomBarHeight);
+        _bottomNavbar.offsetMax = new Vector2(0, _bottomBarHeight);
 
         _areaForCards.anchorMin = new Vector2(0, 0);
         _areaForCards.anchorMax = new Vector2(1, 1);
         _areaForCards.pivot = new Vector2(0.5f, 0.5f);
-        _areaForCards.offsetMin = new Vector2(0, BottomBarHeight);
-        _areaForCards.offsetMax = new Vector2(0, -TopBarHeight);
+        _areaForCards.offsetMin = new Vector2(0, _bottomBarHeight);
+        _areaForCards.offsetMax = new Vector2(0, -_topBarHeight);
     }
 }

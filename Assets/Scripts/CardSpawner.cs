@@ -6,8 +6,8 @@ public class CardSpawner : MonoBehaviour
 {
     [SerializeField] private RectTransform _areaForCards;
     [SerializeField] private GameObject _cardPrefab;
-    [SerializeField] private int columns = 5;
-    [SerializeField] private int rows = 5;
+    [SerializeField] private int _columns = 5;
+    [SerializeField] private int _rows = 5;
 
     private GridLayoutGroup _grid;
     private Vector2 _lastSize;
@@ -16,7 +16,7 @@ public class CardSpawner : MonoBehaviour
     {
         yield return new WaitForSeconds(0.25f);
         SetupGrid();
-        SpawnCards(columns * rows);
+        SpawnCards(_columns * _rows);
     }
 
     private void Update()
@@ -46,7 +46,7 @@ public class CardSpawner : MonoBehaviour
         }
 
         _grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-        _grid.constraintCount = columns;
+        _grid.constraintCount = _columns;
         _grid.childAlignment = TextAnchor.MiddleCenter;
         _grid.startAxis = GridLayoutGroup.Axis.Horizontal;
         _grid.startCorner = GridLayoutGroup.Corner.UpperLeft;
@@ -59,18 +59,18 @@ public class CardSpawner : MonoBehaviour
         float paddingTop = _grid.padding.top;
         float paddingBottom = _grid.padding.bottom;
 
-        float totalHorizontalSpacing = _grid.spacing.x * (columns - 1);
-        float totalVerticalSpacing = _grid.spacing.y * (rows - 1);
+        float totalHorizontalSpacing = _grid.spacing.x * (_columns - 1);
+        float totalVerticalSpacing = _grid.spacing.y * (_rows - 1);
 
         float availableWidth = width - totalHorizontalSpacing - paddingLeft - paddingRight;
         float availableHeight = height - totalVerticalSpacing - paddingTop - paddingBottom;
 
-        if (availableWidth / columns < 100f)
-            columns = Mathf.Max(1, Mathf.FloorToInt(availableWidth / 100f));
+        if (availableWidth / _columns < 100f)
+            _columns = Mathf.Max(1, Mathf.FloorToInt(availableWidth / 100f));
 
-        availableWidth = width - _grid.spacing.x * (columns - 1) - paddingLeft - paddingRight;
-        float cellWidth = availableWidth / columns;
-        float cellHeight = availableHeight / rows;
+        availableWidth = width - _grid.spacing.x * (_columns - 1) - paddingLeft - paddingRight;
+        float cellWidth = availableWidth / _columns;
+        float cellHeight = availableHeight / _rows;
 
         float squareSize = Mathf.Min(cellWidth, cellHeight);
 
