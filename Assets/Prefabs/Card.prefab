@@ -92,6 +92,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsFlipped: 0
+  IsAnimating: 0
   _targetYRotation: -180
   _cardImage: {fileID: 5273559664157851457}
   _rotationDuration: 0.5
@@ -107,6 +108,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88a6b7f8f2981ec45b2cd590bbd7da02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ID: 0
+  Rotatable: {fileID: 7754325599022947135}
+  _image: {fileID: 2781688867487663807}
 --- !u!1 &5273559664157851457
 GameObject:
   m_ObjectHideFlags: 0
