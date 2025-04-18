@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,21 +6,34 @@ using UnityEngine.UI;
 public class Rotatable : MonoBehaviour, IRotatable
 {
     public bool IsFlipped = false;
-    
+    public bool IsAnimating = false;
+
+    public static event Action<Rotatable> Rotating;
+
     [SerializeField] private float _targetYRotation = -180f;
     [SerializeField] private GameObject _cardImage;
     [SerializeField] private float _rotationDuration = 0.5f;
 
-    private bool _isAnimating = false;
     private float _animationTimer = 0f;
     private Quaternion _initialRotation;
     private Quaternion _finalRotation;
-
+    
+    public void ResetRotation()
+    {
+        IsFlipped = false;
+        Debug.Log($"{name} reset");
+    }
 
     public void Rotate()
     {
-        if (_isAnimating) return;
+        if (IsAnimating) return;
+        /*I rotate before animation to match: "The system
+        should allow continuous card flipping without requiring users to wait for card
+        comparisons to finish before selecting additional cards.
+        " requirement.
+         */
         IsFlipped = !IsFlipped;
+        Rotating?.Invoke(this);
 
         RectTransform rectTransform = _cardImage.GetComponent<RectTransform>();
         Vector3 currentEulerAngles = rectTransform.localEulerAngles;
@@ -29,13 +43,12 @@ public class Rotatable : MonoBehaviour, IRotatable
         _finalRotation = Quaternion.Euler(currentEulerAngles.x, newYRotation, currentEulerAngles.z);
 
         _animationTimer = 0f;
-        _isAnimating = true;
-
+        IsAnimating = true;
     }
 
     private void Update()
     {
-        if (!_isAnimating) return;
+        if (!IsAnimating) return;
 
         _animationTimer += Time.deltaTime;
         float progress = Mathf.Clamp01(_animationTimer / _rotationDuration);
@@ -45,7 +58,7 @@ public class Rotatable : MonoBehaviour, IRotatable
 
         if (progress >= 1f)
         {
-            _isAnimating = false;
+            IsAnimating = false;
         }
     }
 }
