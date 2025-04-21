@@ -61,6 +61,7 @@ public class GameManager : MonoBehaviour
         foreach (var card in cardsToFlip)
         {
             card.Rotate();
+            _audioSource.PlayOneShot(_flipClip); 
             FlippedCardsQueue.Remove(card);
             _cardFlipTimes.Remove(card); 
         }
@@ -168,12 +169,13 @@ public class GameManager : MonoBehaviour
 
             card1.RotateToZero();
             card2.RotateToZero();
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(1.5f);
             
         }
-        yield return new WaitForSeconds(1);
         FlippedCardsQueue.Remove(card1);
         FlippedCardsQueue.Remove(card2);
+        _cardFlipTimes.Remove(card1);
+        _cardFlipTimes.Remove(card2);
 
     }
 
