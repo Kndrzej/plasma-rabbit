@@ -110,7 +110,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: 0
   Rotatable: {fileID: 7754325599022947135}
-  _image: {fileID: 2781688867487663807}
+  Image: {fileID: 2781688867487663807}
 --- !u!1 &5273559664157851457
 GameObject:
   m_ObjectHideFlags: 0

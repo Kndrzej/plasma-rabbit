@@ -151,6 +151,8 @@ public class GameManager : MonoBehaviour
 
         if (isMatch)
         {
+            StartCoroutine(FadeOutImages(cardComponent1.Image, cardComponent2.Image, 1f));
+            yield return new WaitForSeconds(1f);
             _audioSource.PlayOneShot(_matchClip);
             _scoreValue += 1;
             _score.text = "Score: " + _scoreValue;
@@ -203,5 +205,26 @@ public class GameManager : MonoBehaviour
             _winScreen.GetComponent<WinScreen>().SetScore(_scoreValue);
         }
     }
+    public static IEnumerator FadeOutImages(Image image1, Image image2, float duration)
+    {
+        float time = 0f;
 
+        Color startColor1 = image1.color;
+        Color startColor2 = image2.color;
+
+        while (time < duration)
+        {
+            float alpha = Mathf.Lerp(1f, 0f, time / duration);
+
+            if (image1) image1.color = new Color(startColor1.r, startColor1.g, startColor1.b, alpha);
+            if (image2) image2.color = new Color(startColor2.r, startColor2.g, startColor2.b, alpha);
+
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure alpha is fully 0 at the end
+        if (image1) image1.color = new Color(startColor1.r, startColor1.g, startColor1.b, 0f);
+        if (image2) image2.color = new Color(startColor2.r, startColor2.g, startColor2.b, 0f);
+    }
 }

@@ -7,7 +7,7 @@ public class Card : MonoBehaviour
     public int ID;
 
     public Rotatable Rotatable;
-    [SerializeField] private Image _image;
+    [SerializeField] public Image Image;
 
     private void Awake()
     {
@@ -17,17 +17,17 @@ public class Card : MonoBehaviour
     public void SetFrontTexture(Texture2D texture)
     {
       
-        if (_image != null && texture != null)
+        if (Image != null && texture != null)
         {
             // Create a new instance of the material if needed
-            if (_image.material != null)
+            if (Image.material != null)
             {
 
-                Debug.Log(_image.material);
-                _image.material = new Material(_image.material);
+                Debug.Log(Image.material);
+                Image.material = new Material(Image.material);
             }
 
-            _image.material.SetTexture("_MainTex", texture);
+            Image.material.SetTexture("_MainTex", texture);
         }
     }
 
